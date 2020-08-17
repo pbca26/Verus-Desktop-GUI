@@ -13,11 +13,13 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import WalletPaper from '../../../../../containers/WalletPaper/WalletPaper';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
+import { openAddCoinModal } from '../../../../../actions/actionDispatchers';
+import { copyDataToClipboard } from '../../../../../util/copyToClipboard';
 
 export const DashboardRender = function() {
   //TODO: Move to parent component so this isnt re-calculated at render
   const verusProtocolCoins = Object.values(this.props.activatedCoins).filter((coinObj) => {
-    return coinObj.tags.includes(IS_VERUS) && coinObj.mode === NATIVE
+    return coinObj.options.tags.includes(IS_VERUS) && coinObj.mode === NATIVE
   })
   const identityChains = Object.keys(this.props.identities)
 
@@ -311,7 +313,7 @@ export const DashboardRender = function() {
                 <a
                   href="#"
                   style={{ color: "rgb(78,115,223)" }}
-                  onClick={this.openAddCoinModal}
+                  onClick={openAddCoinModal}
                 >
                   {
                     "Add a Verus protocol coin (VRSC or VRSCTEST) to start making IDs!"
@@ -345,8 +347,8 @@ export const DashboardRender = function() {
                   </a>
                 </div>
                 <div style={{ textAlign: "center", marginTop: 5 }}>
-                  {"Commiting a name costs as little as one transaction fee, and simply involves " +
-                    "choosing the name you would like, and comitting it into a transaction that you later refer to when creating an identity."}
+                  {"Committing a name costs as little as one transaction fee, and simply involves " +
+                    "choosing the name you would like, and committing it into a transaction that you later refer to when creating an identity."}
                 </div>
               </React.Fragment>
             )}
@@ -357,7 +359,7 @@ export const DashboardRender = function() {
                   getInfoErrors,
                   activatedCoins
                 } = this.props;
-                if (activatedCoins[chainTicker].tags.includes(IS_VERUS)) {
+                if (activatedCoins[chainTicker].options.tags.includes(IS_VERUS)) {
                   const identityError =
                     identityErrors[chainTicker] != null
                       ? identityErrors[chainTicker].error
@@ -420,7 +422,7 @@ export const DashboardRenderTable = function() {
             const { identities, transactions } = this.props
             let isUsed = false
             let loading = false
-            let failed = false
+            let failed = reservationObj.confirmations < 0 ? true : false
             
             if (identities[chainTicker] && transactions[chainTicker]) {
               if (!(identities[chainTicker].every(idObj => {
@@ -430,7 +432,7 @@ export const DashboardRenderTable = function() {
               } else {
                 for (let i = 0; i < transactions[chainTicker].length; i++) {
                   const tx = transactions[chainTicker][i]
-
+  
                   if (tx.address === namereservation.nameid) {
                     const { confirmations } = tx
                     // If confirmation < 0, mark as "ready" to be used again
@@ -458,14 +460,14 @@ export const DashboardRenderTable = function() {
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between"
+                  justifyContent: "space-between",
                 }}
               >
                 <td
                   style={{
                     color: "rgb(0,0,0)",
                     fontWeight: "bold",
-                    borderTop: 0
+                    borderTop: 0,
                   }}
                 >
                   {`${namereservation.name}@`}
@@ -488,7 +490,7 @@ export const DashboardRenderTable = function() {
                       paddingTop: 1,
                       paddingBottom: 1,
                       borderWidth: 1,
-                      margin: 0
+                      margin: 0,
                     }}
                   >
                     {loading
@@ -497,7 +499,8 @@ export const DashboardRenderTable = function() {
                       ? "Used"
                       : failed
                       ? "Failed"
-                      : reservationObj.confirmations != null && reservationObj.confirmations > 0
+                      : reservationObj.confirmations != null &&
+                        reservationObj.confirmations > 0
                       ? "Ready"
                       : "Pending..."}
                   </h3>
@@ -520,12 +523,17 @@ export const DashboardRenderTable = function() {
                           reservationObj.confirmations == 0 ||
                           loading
                             ? "rgb(0,0,0)"
-                            : "rgb(78,115,223)"
+                            : "rgb(78,115,223)",
                       }}
                       onClick={
-                        reservationObj.confirmations == null ||
-                        reservationObj.confirmations == 0 ||
-                        loading
+                        failed
+                          ? () => this.openCommitNameModal(chainTicker, {
+                              name: namereservation.name,
+                              referralId: namereservation.referral,
+                            })
+                          : reservationObj.confirmations == null ||
+                            reservationObj.confirmations == 0 ||
+                            loading
                           ? () => {
                               return 0;
                             }
@@ -544,7 +552,8 @@ export const DashboardRenderTable = function() {
                         ? "Untrack name commitment"
                         : failed
                         ? "Try again"
-                        : reservationObj.confirmations != null && reservationObj.confirmations > 0
+                        : reservationObj.confirmations != null &&
+                          reservationObj.confirmations > 0
                         ? "Create Verus ID"
                         : "Waiting for confirmation..."}
                     </a>
@@ -645,19 +654,22 @@ export const DashboardRenderIds = function() {
                 height="50px"
               />
               <div style={{ paddingLeft: 10, overflow: "hidden" }}>
-                <h3
+                <a
                   className="d-lg-flex align-items-lg-center"
                   style={{
                     fontSize: 16,
-                    color: "rgb(0,0,0)",
+                    color: 'rgb(78,115,223)',
                     fontWeight: "bold",
                     textOverflow: "ellipsis",
                     overflow: "hidden",
-                    whiteSpace: "nowrap"
+                    whiteSpace: "nowrap",
+                    textDecoration: "none"
                   }}
+                  href={"#"}
+                  onClick={() => copyDataToClipboard(`${identity.name}@`)}
                 >
                   {`${identity.name}@`}
-                </h3>
+                </a>
                 <h3
                   className={`d-lg-flex align-items-lg-center coin-type ${
                     idObj.status === ID_REVOKED ? "red" : "native"

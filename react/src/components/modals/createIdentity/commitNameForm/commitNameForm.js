@@ -13,7 +13,8 @@ import {
   CREATE_IDENTITY,
   ERROR_NAME_REQUIRED,
   ERROR_INVALID_ID,
-  ENTER_DATA
+  ENTER_DATA,
+  LONG_ALERT
 } from "../../../../util/constants/componentConstants";
 import { newSnackbar } from '../../../../actions/actionCreators';
 
@@ -37,9 +38,15 @@ class CommitNameForm extends React.Component {
     this.generateTxDataDisplay = this.generateTxDataDisplay.bind(this)
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (Object.keys(this.props.txData).length > 0) {
       this.generateTxDataDisplay()
+    }
+
+    if (this.props.commitmentData != null) {
+      const { name, referralId } = this.props.commitmentData
+
+      this.setAndUpdateState({ name, referralId: referralId == null ? '' : referralId })
     }
   }
 
@@ -53,7 +60,7 @@ class CommitNameForm extends React.Component {
   }
 
   generateWarningSnack(warnings) {    
-    this.props.dispatch(newSnackbar(WARNING_SNACK, warnings[0].message))
+    this.props.dispatch(newSnackbar(WARNING_SNACK, warnings[0].message, LONG_ALERT))
   }
 
   generateTxDataDisplay() {

@@ -1,7 +1,10 @@
 export default {
   viewport: { 
     height: "100vh", 
-    paddingTop: 16 
+    paddingTop: 16,
+    backgroundImage: 'url("assets/images/verus-graphics/soft-gradient-round.png")',
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
   },
   mainContainer: {
     width: "100%",
@@ -15,7 +18,7 @@ export default {
     padding: 0, 
     paddingTop: 0 
   },
-  mainNavigationTab: {
+  mainNavigationTabWithText: {
     fontSize: 16,
     padding: 20,
     paddingTop: 10,
@@ -24,15 +27,26 @@ export default {
     paddingLeft: 0,
     minWidth: 215
   },
+  mainNavigationTabWithoutText: {
+    fontSize: 16,
+    padding: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingRight: 0,
+    paddingLeft: 0,
+    minWidth: 48
+  },
   navigationTabIcon: {
     marginRight: 6
   },
   topBarMenuItem: {
     backgroundColor: "rgba(78,115,223,0)",
     color: "rgb(78,115,223)",
-    marginRight: 20,
     borderWidth: 0,
     height: "100%",
+  },
+  topBarMenuItemContainer: {
+    marginRight: 20,
   },
   topBarMenuItemIcon: { 
     fontSize: 25
@@ -41,11 +55,13 @@ export default {
     overflowY: "scroll", 
     height: 217 
   },
-  secondaryTabBarContainer: {
+  tabUnderline: {
     marginRight: 0,
     marginLeft: 0,
+    marginTop: -1,
     zIndex: 1,
-    minHeight: 40
+    minHeight: 20,
+    backgroundColor: "rgb(78,115,223)"
   },
   secondaryTabBarInnerContainer: {
     padding: 0
@@ -78,4 +94,24 @@ export default {
     paddingBottom: 0, 
     paddingLeft: 0 
   },  
+  cardClickableContainer: {
+    width: "100%",
+    overflow: "hidden"
+  },
+  cardContainer: {
+    paddingRight: 16,
+    paddingLeft: 16,
+    paddingTop: 8,
+    paddingBottom: 8
+  },
+  cardInnerContainer: { 
+    width: "100%",
+  },
+  cardInnerTextContainer: { 
+    paddingLeft: 24,
+    paddingTop: 8,
+    paddingBottom: 8,
+    fontWeight: 'bold',
+    color: 'rgb(55, 67, 77)'
+  },
 }

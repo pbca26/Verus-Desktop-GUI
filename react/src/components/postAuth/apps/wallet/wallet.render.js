@@ -1,6 +1,7 @@
 import React from 'react';
 import WalletStyles from './wallet.styles'
-import { NATIVE, DASHBOARD, ETH, CHAIN_POSTFIX } from '../../../../util/constants/componentConstants'
+import { NATIVE, DASHBOARD, ETH, CHAIN_POSTFIX, CHAIN_FALLBACK_IMAGE } from '../../../../util/constants/componentConstants'
+import { openAddCoinModal } from '../../../../actions/actionDispatchers';
 
 export const WalletCardRender = function(coinObj) {
   const {
@@ -56,6 +57,7 @@ export const WalletCardRender = function(coinObj) {
                   }/${coinObj.id.toLowerCase()}.png`}
                   width="25px"
                   height="25px"
+                  onError={(e) => {e.target.src = CHAIN_FALLBACK_IMAGE}}
                 />
                 <h4 style={WalletStyles.cardCoinName}>
                   <strong>{coinObj.name}</strong>
@@ -101,29 +103,17 @@ export const WalletCardRender = function(coinObj) {
 
 export const WalletTabsRender = function() {
   return [
-    <li className="nav-item" role="presentation" key="wallet-dashboard">
-      <a
-        className={`nav-link ${this.props.mainPathArray.includes(
-          DASHBOARD ? "active" : ""
-        )}`}
-        href="#"
-        onClick={() => this.openDashboard()}
-        style={WalletStyles.secondaryTabBarLink}
-      >
-        <i className="fas fa-home" style={WalletStyles.navigationTabIcon} />
-        {"Dashboard"}
-      </a>
-    </li>,
-    <li className="nav-item" role="presentation" key="wallet-addcoin">
-      <a
-        className="nav-link"
-        href={"#"}
-        style={WalletStyles.secondaryTabBarLink}
-        onClick={this.openAddCoinModal}
-      >
-        <i className="fas fa-plus" style={WalletStyles.navigationTabIcon} />
-        {"Add Coin"}
-      </a>
-    </li>
+    {
+      title: "Add Coin",
+      icon: 'fa-plus',
+      onClick: openAddCoinModal,
+      isActive: () => false
+    },
+    {
+      title: "Wallet Dashboard",
+      icon: 'fa-home',
+      onClick: () => this.openDashboard(),
+      isActive: () => this.props.mainPathArray.includes(DASHBOARD)
+    }
   ];
 };
